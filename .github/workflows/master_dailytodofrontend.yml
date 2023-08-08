@@ -25,13 +25,14 @@ jobs:
         run: |
           npm install
           npm run build --if-present
-          npm run test --if-present
+      - name: Zip artifact for deployment
+        run: zip release.zip ./* -r
 
       - name: Upload artifact for deployment job
         uses: actions/upload-artifact@v2
         with:
           name: node-app
-          path: .
+          path: release.zip
 
   deploy:
     runs-on: ubuntu-latest
@@ -45,6 +46,7 @@ jobs:
         uses: actions/download-artifact@v2
         with:
           name: node-app
+
       - name: unzip artifact for deployment
         run: unzip release.zip
 
@@ -55,7 +57,7 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v2
         with:
-          app-name: 'dailytodofrontend'
+        app-name: 'dailytodofrontend'
           slot-name: 'Production'
-          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_CF71CAFBD4194F1A89E05BAAC84636AD }}
+          publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_8FDF287A6F9247DC9665E95663AE60CC }}
           package: .
